@@ -1,4 +1,4 @@
-const ALL_DATA = [
+const PROD_DATA = [
     {
         "name": {
             "common": "South Georgia",
@@ -53043,4 +53043,4 @@ const ALL_DATA = [
     }
 ];
 
-export default ALL_DATA;
+export default PROD_DATA;

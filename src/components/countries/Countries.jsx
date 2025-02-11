@@ -8,12 +8,14 @@ import SideBar from "./SideBar";
 import Body from "./Body";
 import Footer from "./Footer";
 
-import TEST_DATA from "../../TEST_DATA";
+// import TEST_DATA from "../../TEST_DATA";
+import PROD_DATA from "../../PROD_DATA";
 
 const Countries = () => {
 
     // API response
-    const data = TEST_DATA;
+    // const data = TEST_DATA;
+    const data = PROD_DATA;
     
     const regionsMap = {};
     let subRegionsMap = {};
@@ -24,6 +26,7 @@ const Countries = () => {
     const countries = new Set();
 
     const [dataMap, setDataMap] = useState(regionsMap);
+    const [dataFilterType, setDataFilterType] = useState('none');
 
     for(const obj in data){
 
@@ -37,15 +40,16 @@ const Countries = () => {
 
         subRegionsMap = {};
         countriesMap = {};
+                
         if( regionsMap[region] ) { // { americas: { NA: { USA: {} } } }
             subRegionsMap = regionsMap[region];
             if( subRegionsMap[subRegion] ){   // { NA: { USA: {} } }
                 countriesMap = subRegionsMap[subRegion];
                 countriesMap[country] = data[obj]; // { USA: {} }
             } else{
-                subRegionsMap[subRegion] = {
-                    country: data[obj]
-                };
+                countriesMap = {};
+                countriesMap[country] = data[obj];
+                subRegionsMap[subRegion] = countriesMap;
             }
         } else {
             countriesMap[country] = data[obj];  // USA: {}
@@ -57,22 +61,25 @@ const Countries = () => {
     const filterDataBasedOnRegion = (regionVal) => {
         console.log("regionVal = " + regionVal);
         setDataMap({...regionsMap[regionVal]});
+        setDataFilterType("region");
     };
 
     const filterDataBasedOnSubRegion = (selectedRegion, subRegionVal) => {
         console.log("selectedRegion = " + selectedRegion + " , subRegionVal = "+ subRegionVal);
         setDataMap({...regionsMap[selectedRegion][subRegionVal]});
+        setDataFilterType("subregion");
     };
 
     const filterDataBasedOnCountry = (selectedRegion, selectedSubRegion, countryVal) => {
         console.log("selectedRegion = " + selectedRegion + " , selectedSubRegion = "+ selectedSubRegion + " , countryVal = "+ countryVal);
         setDataMap({...regionsMap[selectedRegion][selectedSubRegion][countryVal]});
+        setDataFilterType("country");
     };
 
-    /* console.log(regions);
+    console.log(regions);
     console.log(subRegions);
     console.log(countries);
-    console.log(regionsMap); */
+    console.log(regionsMap);
     
     return (
         <>
@@ -103,7 +110,9 @@ const Countries = () => {
 
                     <Col lg="10">
                         <Body 
-                            regionsMap={regionsMap}
+                            // regionsMap={regionsMap}
+                            data={dataMap}
+                            dataFilterType={dataFilterType}
                         ></Body>
                     </Col>
                 

@@ -63,7 +63,7 @@ const SideBar = (props) => {
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Select Region</Form.Label>
                             <Form.Select aria-label="Default select regionCombos" id="selectedRegion" onChange={changeRegion}>
-                                {/* <option>Select Region</option> */}
+                                <option>Select Region</option>
                                 {allRegions.map(el => {
                                     return (
                                         <option value={el} key={el}>{el}</option>
@@ -75,7 +75,7 @@ const SideBar = (props) => {
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                             <Form.Label>Select Sub-Region</Form.Label>
                             <Form.Select aria-label="Default select subRegionCombos" id="selectedRegion" onChange={changeSubRegion}>
-                                {/* <option>Select Sub-Region</option> */}
+                                <option>Select Sub-Region</option>
                                 {subRegions.map(el => {
                                     // console.log(el);
                                     return (
@@ -88,7 +88,7 @@ const SideBar = (props) => {
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                             <Form.Label>Select Country</Form.Label>
                             <Form.Select aria-label="Default select countriesCombos" id="selectedCountry" onChange={changeCountry}>
-                                {/* <option>Select Country</option> */}
+                                <option>Select Country</option>
                                 {countries.map(el => {
                                     // console.log(el);
                                     return (
