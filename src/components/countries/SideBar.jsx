@@ -1,72 +1,107 @@
 import React from "react";
-import { Row, Col } from "react-bootstrap";
+import { useState } from "react";
+import { Row } from "react-bootstrap";
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
-const SideBar = () => {
-  return (
-    <>
-        <Container>
-            <Row>
+const SideBar = (props) => {
 
-                <Form>
-                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                        <Form.Label>Select Region</Form.Label>
-                        <Form.Select aria-label="Default select example">
-                            <option>Select Region</option>
-                            <option value="1">R1</option>
-                            <option value="2">R2</option>
-                            <option value="3">R3</option>
-                        </Form.Select>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                        <Form.Label>Select Sub-Region</Form.Label>
-                        <Form.Select aria-label="Default select example">
-                            <option>Select Sub-Region</option>
-                            <option value="1">SR1</option>
-                            <option value="2">SR2</option>
-                            <option value="3">SR3</option>
-                        </Form.Select>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                        <Form.Label>Select Country</Form.Label>
-                        <Form.Select aria-label="Default select example">
-                            <option>Select Country</option>
-                            <option value="1">C1</option>
-                            <option value="2">C2</option>
-                            <option value="3">C3</option>
-                        </Form.Select>
-                    </Form.Group>
-                </Form>
+    const regionsMap = props.regionsMap;
 
-                {/* <Col>
-                    <Form.Select aria-label="Default select example">
-                        <option>Select Region</option>
-                        <option value="1">R1</option>
-                        <option value="2">R2</option>
-                        <option value="3">R3</option>
-                    </Form.Select>
-                </Col>
-                <Col>
-                    <Form.Select aria-label="Default select example">
-                        <option>Select Sub-Region</option>
-                        <option value="1">SR1</option>
-                        <option value="2">SR2</option>
-                        <option value="3">SR3</option>
-                    </Form.Select>
-                </Col>
-                <Col>
-                    <Form.Select aria-label="Default select example">
-                        <option>Select Country</option>
-                        <option value="1">C1</option>
-                        <option value="2">C2</option>
-                        <option value="3">C3</option>
-                    </Form.Select>
-                </Col> */}
-            </Row>
-        </Container>
-    </>
-  );
+    const allRegions = [...props.regions];
+    const allSubRegions = [...props.subRegions];
+    const allCountries = [...props.countries];
+
+    const [selectedRegion, setSelectedRegion] = useState();
+    const [selectedSubRegion, setSelectedSubRegion] = useState();
+    const [selectedCountry, setSelectedCountry] = useState();
+
+    const [subRegions, setSubRegions] = useState([]);
+    const [countries, setCountries] = useState([]);
+
+    /* const countries = allCountries.filter((e)=> {
+        return e;
+    }); */
+
+    const changeRegion = (e) => {
+        let regionVal = e.target.value;
+        setSelectedRegion(regionVal);
+        let subregionsArr = Object.getOwnPropertyNames(regionsMap[regionVal]);
+        setSubRegions([...allSubRegions.filter((e)=> {
+            return subregionsArr.includes(e);
+        })]);
+        setCountries([]);
+        props.filterDataBasedOnRegion(regionVal);
+    };
+
+    const changeSubRegion = (e) => {
+        let subRegionVal = e.target.value;
+        setSelectedSubRegion(subRegionVal);
+        let countriesArr = Object.getOwnPropertyNames(regionsMap[selectedRegion][subRegionVal]);
+        setCountries([...allCountries.filter((e)=> {
+            return countriesArr.includes(e);
+        })]);
+        props.filterDataBasedOnSubRegion(selectedRegion, subRegionVal);
+    };
+
+    const changeCountry = (e) => {
+        let countryVal = e.target.value;
+        setSelectedCountry(countryVal);
+        props.filterDataBasedOnCountry(selectedRegion, selectedSubRegion, countryVal);
+    }
+
+    /* console.log(allRegions);
+    console.log(subRegions);
+    console.log(countries);
+    console.log(regionsMap) */
+
+    return (
+        <>
+            <Container>
+                <Row>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                            <Form.Label>Select Region</Form.Label>
+                            <Form.Select aria-label="Default select regionCombos" id="selectedRegion" onChange={changeRegion}>
+                                {/* <option>Select Region</option> */}
+                                {allRegions.map(el => {
+                                    return (
+                                        <option value={el} key={el}>{el}</option>
+                                    );
+                                })}
+                            </Form.Select>                            
+                        </Form.Group>
+                        <br/>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                            <Form.Label>Select Sub-Region</Form.Label>
+                            <Form.Select aria-label="Default select subRegionCombos" id="selectedRegion" onChange={changeSubRegion}>
+                                {/* <option>Select Sub-Region</option> */}
+                                {subRegions.map(el => {
+                                    // console.log(el);
+                                    return (
+                                        <option value={el} key={el}>{el}</option>
+                                    );
+                                })}
+                            </Form.Select>
+                        </Form.Group>
+                        <br/>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                            <Form.Label>Select Country</Form.Label>
+                            <Form.Select aria-label="Default select countriesCombos" id="selectedCountry" onChange={changeCountry}>
+                                {/* <option>Select Country</option> */}
+                                {countries.map(el => {
+                                    // console.log(el);
+                                    return (
+                                        <option value={el} key={el}>{el}</option>
+                                    );
+                                })}
+                            </Form.Select>
+                        </Form.Group>
+                    </Form>
+                </Row>
+            </Container>
+        </>
+    );
 }
 
 export default SideBar;
