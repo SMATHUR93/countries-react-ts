@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -9,13 +9,50 @@ import Body from "./Body";
 import Footer from "./Footer";
 
 // import TEST_DATA from "../../TEST_DATA";
-import PROD_DATA from "../../PROD_DATA";
+// import PROD_DATA from "../../PROD_DATA";
+
+const API_BASE_URL = "https://restcountries.com/v3.1/all";
+
+const API_OPTIONS = {
+    method: 'GET',
+    headers: {
+        accept: 'application/json'
+    }
+};
 
 const Countries = () => {
 
     // API response
     // const data = TEST_DATA;
-    const data = PROD_DATA;
+    const [data, setData] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const fetchData = async ()=>{
+        setIsLoading(true);
+        setErrorMessage('');
+        try {
+            const endpoint = `${API_BASE_URL}?fields=name,capital,currencies,region,subregion,languages,flag,flags,population`;
+            const response = await fetch(endpoint, API_OPTIONS);
+            if(!response.ok){
+                throw new Error("Failed to fetch data");
+            }
+            const responseJSON = await response.json();
+            if(!responseJSON){
+                setErrorMessage(responseJSON.Error || 'Failed to fetch data');
+                setData([]);
+                return;
+            }
+            setData(responseJSON || []);
+        } catch (e){
+            console.error(`Error fetching data ${e}`);
+            setErrorMessage("Errror fetching data, Please try again later.");
+        } finally {
+            console.log("Finally block");
+            setIsLoading(false);
+        }
+    }
+    
     
     const regionsMap = {};
     let subRegionsMap = {};
@@ -27,6 +64,10 @@ const Countries = () => {
 
     const [dataMap, setDataMap] = useState(regionsMap);
     const [dataFilterType, setDataFilterType] = useState('none');
+
+    useEffect(()=>{
+        fetchData();
+    },[]);
 
     for(const obj in data){
 
@@ -94,29 +135,36 @@ const Countries = () => {
                         <br></br>
                     </Col>
                 </Row>
-                <Row className="justify-content-md-center">
-                
-                    <Col lg="2">
-                        <SideBar 
-                            regions={regions} 
-                            subRegions={subRegions} 
-                            countries={countries} 
-                            regionsMap={regionsMap}
-                            filterDataBasedOnRegion={filterDataBasedOnRegion}
-                            filterDataBasedOnSubRegion={filterDataBasedOnSubRegion}
-                            filterDataBasedOnCountry={filterDataBasedOnCountry}
-                        ></SideBar>
-                    </Col>
+                {isLoading ? (
+                    <h3>Loading...</h3> 
+                ) : errorMessage ? (
+                    <h3>{errorMessage}</h3>
+                ) : (
+                    <Row className="justify-content-md-center">
+                    
+                        <Col lg="2">
+                            <SideBar 
+                                regions={regions} 
+                                subRegions={subRegions} 
+                                countries={countries} 
+                                regionsMap={regionsMap}
+                                filterDataBasedOnRegion={filterDataBasedOnRegion}
+                                filterDataBasedOnSubRegion={filterDataBasedOnSubRegion}
+                                filterDataBasedOnCountry={filterDataBasedOnCountry}
+                            ></SideBar>
+                        </Col>
 
-                    <Col lg="10">
-                        <Body 
-                            // regionsMap={regionsMap}
-                            data={dataMap}
-                            dataFilterType={dataFilterType}
-                        ></Body>
-                    </Col>
+                        <Col lg="10">
+                            <Body 
+                                // regionsMap={regionsMap}
+                                data={dataMap}
+                                dataFilterType={dataFilterType}
+                            ></Body>
+                        </Col>
+                    
+                    </Row>
+                )}
                 
-                </Row>
                 <Row className="justify-content-md-center">
                     <Col>
                         <br></br>
