@@ -47,6 +47,7 @@ const SideBar = (props) => {
     const changeCountry = (e) => {
         let countryVal = e.target.value;
         setSelectedCountry(countryVal);
+        console.log("Selected country is "+ selectedCountry);
         props.filterDataBasedOnCountry(selectedRegion, selectedSubRegion, countryVal);
     }
 
