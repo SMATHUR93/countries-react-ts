@@ -32,7 +32,7 @@ const Countries = () => {
         setIsLoading(true);
         setErrorMessage('');
         try {
-            const endpoint = `${API_BASE_URL}?fields=name,capital,currencies,region,subregion,languages,flag,flags,population`;
+            const endpoint = `${API_BASE_URL}`;
             const response = await fetch(endpoint, API_OPTIONS);
             if(!response.ok){
                 throw new Error("Failed to fetch data");
@@ -48,7 +48,7 @@ const Countries = () => {
             console.error(`Error fetching data ${e}`);
             setErrorMessage("Errror fetching data, Please try again later.");
         } finally {
-            console.log("Finally block");
+            // console.log("Finally block");
             setIsLoading(false);
         }
     }
@@ -117,10 +117,10 @@ const Countries = () => {
         setDataFilterType("country");
     };
 
-    console.log(regions);
+    /* console.log(regions);
     console.log(subRegions);
     console.log(countries);
-    console.log(regionsMap);
+    console.log(regionsMap); */
     
     return (
         <>
