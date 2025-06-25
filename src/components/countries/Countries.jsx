@@ -9,7 +9,7 @@ import Body from "./Body";
 import Footer from "./Footer";
 
 // import TEST_DATA from "../../TEST_DATA";
-// import PROD_DATA from "../../PROD_DATA";
+import PROD_DATA from "../../PROD_DATA";
 
 const API_BASE_URL = "https://restcountries.com/v3.1/all";
 
@@ -46,7 +46,8 @@ const Countries = () => {
             setData(responseJSON || []);
         } catch (e){
             console.error(`Error fetching data ${e}`);
-            setErrorMessage("Errror fetching data, Please try again later.");
+            setData(PROD_DATA);
+            // setErrorMessage("Errror fetching data, Please try again later.");
         } finally {
             // console.log("Finally block");
             setIsLoading(false);
