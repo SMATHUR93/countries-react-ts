@@ -11,7 +11,16 @@ import Footer from "./Footer";
 // import TEST_DATA from "../../TEST_DATA";
 // import PROD_DATA from "../../PROD_DATA";
 
-const API_BASE_URL = "https://restcountries.com/v3.1/all";
+export const REGION = "region";
+export const SUBREGION = "subregion";
+export const NAME = "name";
+export const CAPITAL = "capital";
+export const POPULATION = "population";
+export const FLAG = "flag";
+export const FLAGS = "flags";
+export const MAPS = "maps";
+
+const API_BASE_URL = `https://restcountries.com/v3.1/all?fields=${REGION},${SUBREGION},${NAME},${CAPITAL},${POPULATION},${FLAG},${FLAGS},${MAPS}`;
 
 const API_OPTIONS = {
     method: 'GET',
@@ -27,24 +36,24 @@ const Countries = () => {
     const [data, setData] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    
-    const fetchData = async ()=>{
+
+    const fetchData = async () => {
         setIsLoading(true);
         setErrorMessage('');
         try {
             const endpoint = `${API_BASE_URL}`;
             const response = await fetch(endpoint, API_OPTIONS);
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error("Failed to fetch data");
             }
             const responseJSON = await response.json();
-            if(!responseJSON){
+            if (!responseJSON) {
                 setErrorMessage(responseJSON.Error || 'Failed to fetch data');
                 setData([]);
                 return;
             }
             setData(responseJSON || []);
-        } catch (e){
+        } catch (e) {
             console.error(`Error fetching data ${e}`);
             setErrorMessage("Errror fetching data, Please try again later.");
         } finally {
@@ -52,12 +61,12 @@ const Countries = () => {
             setIsLoading(false);
         }
     }
-    
-    
+
+
     const regionsMap = {};
     let subRegionsMap = {};
     let countriesMap = {};
-        
+
     const regions = new Set();
     const subRegions = new Set();
     const countries = new Set();
@@ -65,15 +74,15 @@ const Countries = () => {
     const [dataMap, setDataMap] = useState(regionsMap);
     const [dataFilterType, setDataFilterType] = useState('none');
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchData();
-    },[]);
+    }, []);
 
-    for(const obj in data){
+    for (const obj in data) {
 
-        let region = data[obj]?.region;
-        let subRegion = data[obj]?.subregion;
-        let country = data[obj]?.name?.common
+        let region = data[obj][REGION];
+        let subRegion = data[obj][SUBREGION];
+        let country = data[obj][NAME]?.common;
 
         regions.add(region);
         subRegions.add(subRegion);
@@ -81,13 +90,13 @@ const Countries = () => {
 
         subRegionsMap = {};
         countriesMap = {};
-                
-        if( regionsMap[region] ) { // { americas: { NA: { USA: {} } } }
+
+        if (regionsMap[region]) { // { americas: { NA: { USA: {} } } }
             subRegionsMap = regionsMap[region];
-            if( subRegionsMap[subRegion] ){   // { NA: { USA: {} } }
+            if (subRegionsMap[subRegion]) {   // { NA: { USA: {} } }
                 countriesMap = subRegionsMap[subRegion];
                 countriesMap[country] = data[obj]; // { USA: {} }
-            } else{
+            } else {
                 countriesMap = {};
                 countriesMap[country] = data[obj];
                 subRegionsMap[subRegion] = countriesMap;
@@ -101,19 +110,19 @@ const Countries = () => {
 
     const filterDataBasedOnRegion = (regionVal) => {
         console.log("regionVal = " + regionVal);
-        setDataMap({...regionsMap[regionVal]});
+        setDataMap({ ...regionsMap[regionVal] });
         setDataFilterType("region");
     };
 
     const filterDataBasedOnSubRegion = (selectedRegion, subRegionVal) => {
-        console.log("selectedRegion = " + selectedRegion + " , subRegionVal = "+ subRegionVal);
-        setDataMap({...regionsMap[selectedRegion][subRegionVal]});
+        console.log("selectedRegion = " + selectedRegion + " , subRegionVal = " + subRegionVal);
+        setDataMap({ ...regionsMap[selectedRegion][subRegionVal] });
         setDataFilterType("subregion");
     };
 
     const filterDataBasedOnCountry = (selectedRegion, selectedSubRegion, countryVal) => {
-        console.log("selectedRegion = " + selectedRegion + " , selectedSubRegion = "+ selectedSubRegion + " , countryVal = "+ countryVal);
-        setDataMap({...regionsMap[selectedRegion][selectedSubRegion][countryVal]});
+        console.log("selectedRegion = " + selectedRegion + " , selectedSubRegion = " + selectedSubRegion + " , countryVal = " + countryVal);
+        setDataMap({ ...regionsMap[selectedRegion][selectedSubRegion][countryVal] });
         setDataFilterType("country");
     };
 
@@ -121,7 +130,7 @@ const Countries = () => {
     console.log(subRegions);
     console.log(countries);
     console.log(regionsMap); */
-    
+
     return (
         <>
             <Container>
@@ -136,17 +145,17 @@ const Countries = () => {
                     </Col>
                 </Row>
                 {isLoading ? (
-                    <h3>Loading...</h3> 
+                    <h3>Loading...</h3>
                 ) : errorMessage ? (
                     <h3>{errorMessage}</h3>
                 ) : (
                     <Row className="justify-content-md-center">
-                    
+
                         <Col lg="2">
-                            <SideBar 
-                                regions={regions} 
-                                subRegions={subRegions} 
-                                countries={countries} 
+                            <SideBar
+                                regions={regions}
+                                subRegions={subRegions}
+                                countries={countries}
                                 regionsMap={regionsMap}
                                 filterDataBasedOnRegion={filterDataBasedOnRegion}
                                 filterDataBasedOnSubRegion={filterDataBasedOnSubRegion}
@@ -155,16 +164,16 @@ const Countries = () => {
                         </Col>
 
                         <Col lg="10">
-                            <Body 
+                            <Body
                                 // regionsMap={regionsMap}
                                 data={dataMap}
                                 dataFilterType={dataFilterType}
                             ></Body>
                         </Col>
-                    
+
                     </Row>
                 )}
-                
+
                 <Row className="justify-content-md-center">
                     <Col>
                         <br></br>
